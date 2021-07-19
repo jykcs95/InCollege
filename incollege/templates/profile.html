@@ -39,5 +39,8 @@
               {{ form.submit(class="btn btn-outline-info") }}
           </div>
       </form>
+      {% for friend in current_user.friends %}
+        <p>{{ friend.fname + ' ' + friend.lname }} is friend.</p>
+      {% endfor %}
   </div>
 {% endblock content %}

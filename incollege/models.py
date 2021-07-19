@@ -6,6 +6,11 @@ from flask_login import UserMixin
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+friends = db.Table('friends', 
+db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+db.Column('friend_id', db.Integer, db.ForeignKey('user.id'))
+)
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -15,6 +20,22 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
 
+    friend = db.relationship('User',
+            secondary = friends, 
+            primaryjoin = (friends.c.user_id == id), 
+            secondaryjoin = (friends.c.friend_id == id), 
+            lazy = 'dynamic')
+
+    def befriend(self,user):
+        if user not in self.friend:
+            self.friend.append(user)
+            user.friend.append(self)
+    
+    def unfriend(self, user):
+        if user in self.friend:
+            self.friend.remove(user)
+            user.friend.remove(self)
+    
     def __repr__(self):
         return f"User('{self.username}', '{self.fname}', '{self.lname}', {self.image_file}')"
 
@@ -28,3 +49,4 @@ class Post(db.Model):
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}')"
+
