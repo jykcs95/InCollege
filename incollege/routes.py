@@ -2,11 +2,12 @@ import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, redirect, flash, request, abort
-from incollege import app, db, bcrypt
+from incollege import application, db, bcrypt
 from incollege.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from incollege.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
+app = application
 @app.route('/')
 @app.route('/home')
 def home():
